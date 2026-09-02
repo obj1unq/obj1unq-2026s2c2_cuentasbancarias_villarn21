@@ -89,6 +89,7 @@ object full{
         }else{
             const viveresFaltantes = 40 - casa.viveres()
             casa.comprarViveres(viveresFaltantes,calidad)
+
         }
     }
     method mantenimientoReparaciones(casa){
@@ -111,8 +112,14 @@ object cuentaCorriente {
     return saldo
   }
   method extraer(monto){
-    saldo = saldo - monto 
-  }
+        self.validarExtraccion(monto)
+        saldo = saldo - monto
+    }
+    method validarExtraccion(monto){
+        if (monto > saldo){
+            self.error("No hay suficiente saldo")
+        }
+    }
   method depositar(monto){
     saldo = saldo + monto
   }
@@ -128,7 +135,13 @@ object cuentaConGastos{
         saldo = saldo + monto - costo
     }
     method extraer(monto){
+        self.validarExtraccion(monto)
         saldo = saldo - monto
+    }
+    method validarExtraccion(monto){
+        if (monto > saldo){
+            self.error("No hay suficiente saldo")
+        }
     }
     method saldo(){
         return saldo
@@ -146,8 +159,8 @@ object cuentaConGastos{
     }
 }
 object cuentaConvinada{
-    var primaria = cuentaPrimaria
-    var secundaria = cuentaSecundaria
+    var primaria = cuentaConGastos
+    var secundaria = cuentaCorriente
     method saldo(){
         return 0.max(primaria.saldo()) + 0.max(secundaria.saldo())
     }
@@ -159,7 +172,7 @@ object cuentaConvinada{
         if (primaria.saldo() - monto >= 0){
             primaria.extraer(monto)
         } else {
-            var faltante = monto - primaria.saldo()
+            const faltante = monto - primaria.saldo()
             secundaria.extraer(faltante)
             primaria.saldo(0)
         }
@@ -174,47 +187,5 @@ object cuentaConvinada{
     }
     method secundaria(_secundaria){
         secundaria = _secundaria
-    }
-}
-object cuentaPrimaria{
-    var saldo = 0
-    method saldo(){
-        return saldo
-    }
-    method extraer(monto){
-        self.validarExtraccion(monto)
-        saldo = saldo - monto
-    }
-    method depositar(monto){
-        saldo = saldo + monto
-    }
-    method validarExtraccion(monto){
-        if (monto > saldo){
-            self.error("No hay suficiente saldo")
-        }
-    }
-    method saldo(_saldo){
-        saldo = _saldo
-    }
-}
-object cuentaSecundaria{
-    var saldo = 0
-    method saldo(){
-        return saldo
-    }
-    method depositar(monto){
-        saldo = saldo + monto
-    }
-    method extraer(monto){
-        self.validarExtraccion(monto)
-        saldo = saldo - monto
-    }
-    method validarExtraccion(monto){
-        if (monto > saldo){
-            self.error("No hay suficiente saldo")
-        }
-    }
-    method saldo(_saldo){
-        saldo = _saldo
     }
 }

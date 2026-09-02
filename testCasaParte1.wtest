@@ -1,9 +1,56 @@
 import casa.*
-
 describe "casa de pepe y julian" {
+  test "comprar viveres" {
+    casa.viveres(91)
+    assert.throwsException({casa.comprarViveres(10, 2)})
+  }
+  test "casa en orden" {
+    casa.reparaciones(0)
+    casa.viveres(40)
+    assert.that(casa.casaEnOrden())
+  }
+  test "suficientes viveres" {
+    casa.viveres(40)
+    assert.that(casa.suficientesViveres())
+  }
+  test "no hay que reparar" {
+    casa.reparaciones(0)
+    assert.notThat(casa.hayQueReparar())
+  }
+}
+describe "mantenimiento full" {
+  test "no puede reparar casa" {
+    casa.cuentaBancaria(cuentaCorriente)
+    cuentaCorriente.saldo(100)
+    casa.reparaciones(200)
+    assert.throwsException({full.mantenimientoReparaciones(casa)})
+  }
+}
 
-  // Descomentar si hiciera falta un metodo para inicializar el ambiente
-  // method initialize() {
-  // }
-
+describe "cuenta convinada" {
+  test "no puede extraer" {
+    cuentaConGastos.saldo(100)
+    cuentaCorriente.saldo(100)
+    assert.throwsException({cuentaConvinada.extraer(300)})
+  }
+  test "no puede depositar" {
+    cuentaConGastos.costo(20)
+    assert.throwsException({cuentaConvinada.depositar(10)})
+  }
+}
+describe "cuenta corriente" {
+  test "no puede extraer" {
+    cuentaCorriente.saldo(100)
+    assert.throwsException({cuentaCorriente.extraer(200)})
+  }
+}
+describe "cuenta con gastos" {
+  test "no puede extraer" {
+    cuentaConGastos.saldo(100)
+    assert.throwsException({cuentaConGastos.extraer(200)})
+  }
+  test "no puede depositar" {
+    cuentaConGastos.costo(20)
+    assert.throwsException({cuentaConGastos.depositar(10)})
+  }
 }
