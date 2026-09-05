@@ -1,6 +1,5 @@
 object casa {
     var cuentaBancaria = cuentaCorriente
-    var saldo = cuentaBancaria.saldo()
     var gastosMes = 0
     var viveres = 0
     var reparaciones = 0
@@ -69,6 +68,9 @@ object minimo{
     method calidad(_calidad){
         calidad = _calidad
     }
+    method calidad(){
+        return calidad
+    }
     method mantenimientoViveres(casa){
         if(not casa.suficientesViveres()){
             const viveresFaltantes = 40 - casa.viveres()
@@ -83,25 +85,16 @@ object full{
         self.mantenimientoReparaciones(casa)
     }
     method mantenimientoViveres(casa){
-        if(casa.casaEnOrden()){
-            const viveresFaltantes = 100 - casa.viveres()
-            casa.comprarViveres(viveresFaltantes,calidad)
-        }else{
-            const viveresFaltantes = 40 - casa.viveres()
-            casa.comprarViveres(viveresFaltantes,calidad)
+        if(casa.casaEnOrden() && casa.viveres() < 100){
+            casa.comprarViveres(100 - casa.viveres(),calidad)
+        }else if (casa.viveres() < 40){
+            casa.comprarViveres(40 - casa.viveres(),calidad)
 
         }
     }
     method mantenimientoReparaciones(casa){
-        if(casa.hayQueReparar()){
-            self.validarReparaciones(casa)
+        if(casa.hayQueReparar() and casa.saldo() >= casa.reparaciones()){
             casa.reparar()
-            casa.reparaciones(0)
-        }
-    }
-    method validarReparaciones(casa){
-        if(casa.saldo() < casa.reparaciones()){
-            self.error("No hay suficiente saldo para reparar la casa")
         }
     }
 }
@@ -112,13 +105,7 @@ object cuentaCorriente {
     return saldo
   }
   method extraer(monto){
-        self.validarExtraccion(monto)
         saldo = saldo - monto
-    }
-    method validarExtraccion(monto){
-        if (monto > saldo){
-            self.error("No hay suficiente saldo")
-        }
     }
   method depositar(monto){
     saldo = saldo + monto
@@ -135,13 +122,7 @@ object cuentaConGastos{
         saldo = saldo + monto - costo
     }
     method extraer(monto){
-        self.validarExtraccion(monto)
         saldo = saldo - monto
-    }
-    method validarExtraccion(monto){
-        if (monto > saldo){
-            self.error("No hay suficiente saldo")
-        }
     }
     method saldo(){
         return saldo
@@ -172,7 +153,7 @@ object cuentaConvinada{
         if (primaria.saldo() - monto >= 0){
             primaria.extraer(monto)
         } else {
-            const faltante = monto - primaria.saldo()
+            const faltante = monto - 0.max(primaria.saldo())
             secundaria.extraer(faltante)
             primaria.saldo(0)
         }
@@ -189,3 +170,23 @@ object cuentaConvinada{
         secundaria = _secundaria
     }
 }
+
+/*
+Reflexionar sobre los conceptos
+Elegir un polimorfirmos e indicar:
+
+1)Qué nombre le pondrías al tipo de los objetos polimórficos.
+2)Qué mensajes componen ese tipo.
+3)Quiénes usan los mensajes polimórficos.
+
+1)estrategiaMantenimiento
+2)mantenimientoCasa y mantenimientoViveres
+3)casa con cambioMes 
+*/
+
+/*
+Mencionar un mensaje que sea una orden y otro que sea una consulta
+Orden: comprarViveres
+Consulta: casaEnOrden
+
+*/
